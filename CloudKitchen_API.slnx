@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="CloudKitchen_API.Data/CloudKitchen_API.Data.csproj" />
+  <Project Path="CloudKitchen_API.Services/CloudKitchen_API.Services.csproj" />
+  <Project Path="CloudKitchen_API/CloudKitchen_API.csproj" />
+</Solution>
