@@ -1,0 +1,2 @@
+cd CloudKitchen_API.Data
+dotnet ef dbcontext scaffold "Host=localhost;Port=5432;Database=CloudKitchenDb;Username=postgres;Password=123456789" Npgsql.EntityFrameworkCore.PostgreSQL --project CloudKitchen_API.Data.csproj --startup-project ..\CloudKitchen_API\CloudKitchen_API.csproj --context-dir TempFolder --context KitchenDbContext --output-dir TempFolder --force

@@ -39,8 +39,8 @@ namespace CloudKitchen_API.Services.Implementation
 
             // Generate OTP and update expiry
             var otp = GetLastSixDigits(mobile);
-            user.OtpCode = otp;
-            user.OtpExpiryTime = DateTime.UtcNow.AddMinutes(5);
+            //user.OtpCode = otp;
+            //user.OtpExpiryTime = DateTime.UtcNow.AddMinutes(5);
 
             await _dbContext.SaveChangesAsync();
 
@@ -59,12 +59,12 @@ namespace CloudKitchen_API.Services.Implementation
                 throw new ApiException("User not found");
             }
 
-            if (user.OtpCode != otpCode) throw new ApiException("Invalid OTP" );
-            if (user.OtpExpiryTime < DateTime.UtcNow) throw new ApiException("OTP has expired");
+            //if (user.OtpCode != otpCode) throw new ApiException("Invalid OTP" );
+            //if (user.OtpExpiryTime < DateTime.UtcNow) throw new ApiException("OTP has expired");
 
-            // Clear OTP
-            user.OtpCode = null;
-            user.OtpExpiryTime = null;
+            //// Clear OTP
+            //user.OtpCode = null;
+            //user.OtpExpiryTime = null;
             await _dbContext.SaveChangesAsync();
 
             // Check if user is "new" (i.e., they haven't set their name yet)

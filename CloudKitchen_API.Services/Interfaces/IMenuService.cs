@@ -9,7 +9,7 @@ namespace CloudKitchen_API.Services.Interfaces
     public interface IUserMenuService
     {
         Task<List<MenuItemDto>> GetAvailableMenuAsync();
-        Task<MenuItemDto?> GetItemDetailsAsync(int itemId);
+        Task<MenuItemDto?> GetItemDetailsAsync(Guid itemId);
         Task<List<CategoryDto>> GetCategoriesAsync();
     }
 }

@@ -29,7 +29,7 @@ namespace CloudKitchen_API.Services.Implementation
 
         }
 
-        public async Task<MenuItemDto?> GetItemDetailsAsync(int itemId)
+        public async Task<MenuItemDto?> GetItemDetailsAsync(Guid itemId)
         {
             var menuItem = await _dbContext.MenuItems.FirstOrDefaultAsync(m => m.Id == itemId);
             if(menuItem is null)
