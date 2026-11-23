@@ -11,7 +11,7 @@ namespace CloudKitchen_API.Services
     {
         public AutoMapperProfile()
         {
-            CreateMap<MenuItem, MenuItemDto>().ReverseMap();
+            CreateMap<MenuItem, MenuItemListDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();
         }
     }

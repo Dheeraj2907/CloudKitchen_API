@@ -49,3 +49,5 @@ public partial class Order
 
     public virtual User User { get; set; } = null!;
 }
+
+

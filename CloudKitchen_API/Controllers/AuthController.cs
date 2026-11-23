@@ -1,9 +1,12 @@
 ﻿using CloudKitchen_API.Data.Models;
+using CloudKitchen_API.Extensions;
 using CloudKitchen_API.Model;
 using CloudKitchen_API.Services.Dto;
 using CloudKitchen_API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -106,6 +109,30 @@ namespace CloudKitchen_API.Controllers
             }
         }
 
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout([FromBody] LogoutRequest req, [FromServices] KitchenDbContext db)
+        {
+            var userId = User.GetUserId();
+
+            if (!string.IsNullOrWhiteSpace(req.RefreshToken))
+            {
+                var rt = await db.RefreshTokens
+                    .FirstOrDefaultAsync(r => r.Token == req.RefreshToken && r.UserId == userId);
+                if (rt != null && rt.RevokedAt == null)
+                {
+                    rt.RevokedAt = DateTime.UtcNow;
+                    await db.SaveChangesAsync();
+                }
+            }
+
+            // Optional: unregister this device from push (client sends token if it wants)
+            // db.DeviceTokens.RemoveRange(db.DeviceTokens.Where(d => d.UserId == userId && d.Token == ...));
+            // await db.SaveChangesAsync();
+
+            return Ok(new ApiResponse { Success = true, Message = "Logged out." });
+        }
+
         private string CreateToken(UserDto user)
         {
             var claims = new[]
@@ -130,3 +157,4 @@ namespace CloudKitchen_API.Controllers
         }
     }
 }
+

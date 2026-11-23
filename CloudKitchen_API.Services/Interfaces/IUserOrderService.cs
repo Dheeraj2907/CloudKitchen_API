@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CloudKitchen_API.Services.Dto;
 
-namespace CloudKitchen_API.Services.Interfaces
+namespace CloudKitchen_API.Services.Interfaces;
+
+public interface IOrderService
 {
-    public interface IUserOrderService
-    {
-        //Task<Order> PlaceOrderAsync(Guid userId, List<OrderItemRequest> items);
-        //Task<Order?> GetOrderStatusAsync(Guid orderId);
-        //Task<List<Order>> GetOrderHistoryAsync(Guid userId);
-    }
+    Task<PlaceOrderResponse> PlaceOrderAsync(Guid userId, PlaceOrderRequest request);
+    Task<TrackOrderResponse> TrackOrderAsync(Guid userId, Guid orderId);
+    Task<ReorderResponse> ReorderAsync(Guid userId, Guid orderId);
+    Task CancelOrderAsync(Guid userId, Guid orderId, string reason);
 }

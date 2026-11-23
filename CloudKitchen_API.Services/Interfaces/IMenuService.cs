@@ -1,15 +1,11 @@
-﻿using CloudKitchen_API.Data.Models;
-using CloudKitchen_API.Services.Dto;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CloudKitchen_API.Services.Dto;
 
-namespace CloudKitchen_API.Services.Interfaces
+namespace CloudKitchen_API.Services.Interfaces;
+
+public interface IMenuService
 {
-    public interface IUserMenuService
-    {
-        Task<List<MenuItemDto>> GetAvailableMenuAsync();
-        Task<MenuItemDto?> GetItemDetailsAsync(Guid itemId);
-        Task<List<CategoryDto>> GetCategoriesAsync();
-    }
+    Task<List<MenuItemListDto>> GetByCategoryAsync(Guid categoryId, int page, int pageSize);
+    Task<MenuItemDetailDto> GetItemDetailsAsync(Guid itemId);
+    Task<List<MenuItemListDto>> GetPopularAsync(int limit);
+    Task<List<MenuItemListDto>> SearchAsync(string query, int page, int pageSize);
 }

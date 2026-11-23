@@ -15,6 +15,8 @@ public partial class CartItem
 
     public DateTime AddedAt { get; set; }
 
+    public string Portion { get; set; } = null!;
+
     public virtual MenuItem MenuItem { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;

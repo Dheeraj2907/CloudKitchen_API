@@ -1,6 +1,7 @@
 using AutoMapper;
 using CloudKitchen_API.Data.Models;
 using CloudKitchen_API.Services;
+using CloudKitchen_API.Services.Hubs;
 using CloudKitchen_API.Services.Implementation;
 using CloudKitchen_API.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,8 +10,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-    var builder = WebApplication.CreateBuilder(args);
-
+var builder = WebApplication.CreateBuilder(args);
 
 var mappingConfig = new MapperConfiguration(mc =>
 {
@@ -33,30 +33,60 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+
+        // Allow the SignalR client to pass the JWT via query string
+        // (browsers cannot set Authorization headers on WebSocket connections)
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/order"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
         };
     });
 
-// Add services to the container.
+builder.Services.AddAuthorization();
+
 builder.Services
     .AddTransient<IAuthService, AuthService>()
-    .AddTransient<IUserMenuService, UserMenuService>();
+    .AddTransient<IMenuService, MenuService>()
+    .AddScoped<IOrderService, OrderService>()
+    .AddTransient<IAuthService, AuthService>()
+    .AddScoped<IOrderService, OrderService>()
+    .AddScoped<IMenuService, MenuService>()
+    .AddScoped<ICartService, CartService>()
+    .AddScoped<IUserService, UserService>()
+    .AddScoped<IAddressService, AddressService>()
+    .AddScoped<ICouponService, CouponService>()
+    .AddScoped<IReviewService, ReviewService>()
+    .AddScoped<IRiderService, RiderService>()
+    .AddScoped<INotificationService, NotificationService>()           // push (from earlier)
+    .AddScoped<INotificationQueryService, NotificationQueryService>(); // this batch;
 
-    builder.Services.AddControllers()
-        .AddJsonOptions(options =>
-        {
-            // This prevents the infinite loop crash
-            options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-        });
+builder.Services.AddSignalR();
 
-    // Add Swagger generation
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-    builder.Services.AddOpenApi();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -66,8 +96,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();   // ⚠️ MUST be before UseAuthorization
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<OrderHub>("/hubs/order");
 
 app.Run();
