@@ -16,6 +16,11 @@ public class MenuController : ControllerBase
     public async Task<IActionResult> GetByCategory(Guid categoryId, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         => Ok(new ApiResponse { Success = true, Data = await _menuService.GetByCategoryAsync(categoryId, page, pageSize) });
 
+    [HttpGet("categories")]
+    public async Task<IActionResult> GetCategories()
+        => Ok(new ApiResponse { Success = true, Data = await _menuService.GetCategoriesAsync() });
+
+
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetDetails(Guid id)
     {

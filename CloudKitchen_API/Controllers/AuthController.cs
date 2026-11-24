@@ -4,7 +4,6 @@ using CloudKitchen_API.Model;
 using CloudKitchen_API.Services.Dto;
 using CloudKitchen_API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -139,6 +138,7 @@ namespace CloudKitchen_API.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.MobilePhone, user.Mobile),
+                new Claim(ClaimTypes.Role, user.Role.ToString())
             };
 
             // Get Secret Key from appsettings.json

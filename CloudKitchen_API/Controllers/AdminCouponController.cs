@@ -1,0 +1,48 @@
+﻿using CloudKitchen_API.Model;
+using CloudKitchen_API.Services.Dto;
+using CloudKitchen_API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CloudKitchen_API.Controllers;
+
+[Authorize(Roles = "Admin")]
+[Route("api/admin/coupons")]
+[ApiController]
+public class AdminCouponController : ControllerBase
+{
+    private readonly IAdminCouponService _svc;
+    public AdminCouponController(IAdminCouponService svc) => _svc = svc;
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] bool includeInactive = false)
+        => Ok(new ApiResponse { Success = true, Data = await _svc.GetAllAsync(includeInactive) });
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] AdminCouponRequest r)
+    {
+        try { return Ok(new ApiResponse { Success = true, Data = await _svc.CreateAsync(r) }); }
+        catch (ApiException ex) { return BadRequest(new ApiResponse { Success = false, Message = ex.Message }); }
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] AdminCouponRequest r)
+    {
+        try { return Ok(new ApiResponse { Success = true, Data = await _svc.UpdateAsync(id, r) }); }
+        catch (ApiException ex) { return BadRequest(new ApiResponse { Success = false, Message = ex.Message }); }
+    }
+
+    [HttpPut("{id:guid}/active")]
+    public async Task<IActionResult> SetActive(Guid id, [FromBody] AvailabilityRequest r)
+    {
+        try { await _svc.SetActiveAsync(id, r.IsAvailable); return Ok(new ApiResponse { Success = true }); }
+        catch (ApiException ex) { return NotFound(new ApiResponse { Success = false, Message = ex.Message }); }
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        try { await _svc.DeleteAsync(id); return Ok(new ApiResponse { Success = true }); }
+        catch (ApiException ex) { return NotFound(new ApiResponse { Success = false, Message = ex.Message }); }
+    }
+}

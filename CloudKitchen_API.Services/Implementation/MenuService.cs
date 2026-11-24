@@ -25,12 +25,25 @@ public class MenuService : IMenuService
                 Id = m.Id,
                 Name = m.Name,
                 Description = m.Description,
-                Price = m.Price,
                 HalfPrice = m.HalfPrice,
                 FullPrice = m.FullPrice,
                 ImageUrl = m.ImageUrl,
                 IsPopular = m.IsPopular
             }).ToListAsync();
+    }
+
+    public async Task<List<CategoryDto>> GetCategoriesAsync()
+    {
+        var items = await _db.Categories.Where(x => x.IsActive).Select(m => new CategoryDto
+        {
+            Id = m.Id,
+            Name = m.Name,
+            ImageUrl = m.ImageUrl,
+            DisplayOrder = m.DisplayOrder,
+            IsActive = m.IsActive
+
+        }).ToListAsync();
+        return items;
     }
 
     public async Task<MenuItemDetailDto> GetItemDetailsAsync(Guid itemId)
@@ -47,7 +60,6 @@ public class MenuService : IMenuService
             Id = item.Id,
             Name = item.Name,
             Description = item.Description,
-            Price = item.Price,
             HalfPrice = item.HalfPrice,
             FullPrice = item.FullPrice,
             ImageUrl = item.ImageUrl,
@@ -82,7 +94,6 @@ public class MenuService : IMenuService
                 Id = m.Id,
                 Name = m.Name,
                 Description = m.Description,
-                Price = m.Price,
                 HalfPrice = m.HalfPrice,
                 FullPrice = m.FullPrice,
                 ImageUrl = m.ImageUrl,
@@ -108,7 +119,6 @@ public class MenuService : IMenuService
                 Id = m.Id,
                 Name = m.Name,
                 Description = m.Description,
-                Price = m.Price,
                 HalfPrice = m.HalfPrice,
                 FullPrice = m.FullPrice,
                 ImageUrl = m.ImageUrl,

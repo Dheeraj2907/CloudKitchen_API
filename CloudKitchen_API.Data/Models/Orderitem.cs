@@ -19,6 +19,8 @@ public partial class OrderItem
 
     public decimal LineTotal { get; set; }
 
+    public string Portion { get; set; } = null!;
+
     public virtual MenuItem MenuItem { get; set; } = null!;
 
     public virtual Order Order { get; set; } = null!;

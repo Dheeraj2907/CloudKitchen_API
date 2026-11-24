@@ -5,7 +5,6 @@ public class MenuItemListDto
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
-    public decimal Price { get; set; }
     public decimal? HalfPrice { get; set; }
     public decimal? FullPrice { get; set; }
     public string? ImageUrl { get; set; }

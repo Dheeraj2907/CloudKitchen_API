@@ -6,11 +6,12 @@ namespace CloudKitchen_API.Services.Dto
 {
     public class CategoryDto
     {
-        public int Id { get; set; }
-
+        public Guid Id { get; set; }
         public string Name { get; set; } = null!;
-
-        public int? DisplayOrder { get; set; }
+        public string? ImageUrl { get; set; }
+        public int DisplayOrder { get; set; }
+        public bool IsActive { get; set; }
+        public int ItemCount { get; set; }
 
     }
 }

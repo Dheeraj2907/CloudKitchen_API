@@ -69,8 +69,11 @@ builder.Services
     .AddScoped<ICouponService, CouponService>()
     .AddScoped<IReviewService, ReviewService>()
     .AddScoped<IRiderService, RiderService>()
-    .AddScoped<INotificationService, NotificationService>()           // push (from earlier)
-    .AddScoped<INotificationQueryService, NotificationQueryService>(); // this batch;
+    .AddScoped<INotificationService, NotificationService>()
+    .AddScoped<IAdminMenuService, AdminMenuService>()
+    .AddScoped<IOrderNotifier, OrderNotifier>()
+    .AddScoped<INotificationQueryService, NotificationQueryService>()
+    .AddScoped<IImageStorageService, LocalImageStorageService>(); 
 
 builder.Services.AddSignalR();
 
@@ -95,8 +98,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthentication();   // ⚠️ MUST be before UseAuthorization
+app.UseStaticFiles();
+app.UseAuthentication();   
 app.UseAuthorization();
 
 app.MapControllers();

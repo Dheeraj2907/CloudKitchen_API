@@ -1,10 +1,8 @@
 ﻿using CloudKitchen_API.Data.Models;
 using CloudKitchen_API.Services.Dto;
+using CloudKitchen_API.Services.Enums;
 using CloudKitchen_API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CloudKitchen_API.Services.Implementation
 {
@@ -32,15 +30,16 @@ namespace CloudKitchen_API.Services.Implementation
                 {
                     Id = Guid.NewGuid(),
                     Mobile = mobile,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    Role = Services.Enums.Roles.Customer.ToString()
                 };
                 _dbContext.Users.Add(user);
             }
 
             // Generate OTP and update expiry
             var otp = GetLastSixDigits(mobile);
-            //user.OtpCode = otp;
-            //user.OtpExpiryTime = DateTime.UtcNow.AddMinutes(5);
+            user.OtpCode = otp;
+            user.OtpExpiryTime = DateTime.UtcNow.AddMinutes(5);
 
             await _dbContext.SaveChangesAsync();
 
@@ -59,12 +58,13 @@ namespace CloudKitchen_API.Services.Implementation
                 throw new ApiException("User not found");
             }
 
-            //if (user.OtpCode != otpCode) throw new ApiException("Invalid OTP" );
-            //if (user.OtpExpiryTime < DateTime.UtcNow) throw new ApiException("OTP has expired");
+            if (user.OtpCode != otpCode) throw new ApiException("Invalid OTP");
+            if (user.OtpExpiryTime < DateTime.UtcNow) throw new ApiException("OTP has expired");
 
-            //// Clear OTP
-            //user.OtpCode = null;
-            //user.OtpExpiryTime = null;
+            // Clear OTP
+            user.OtpCode = null;
+            user.OtpExpiryTime = null;
+            user.IsActive = true;
             await _dbContext.SaveChangesAsync();
 
             // Check if user is "new" (i.e., they haven't set their name yet)
@@ -76,7 +76,8 @@ namespace CloudKitchen_API.Services.Implementation
                 return new UserDto
                 {
                     IsNewUser = true,
-                    Mobile = user.Mobile
+                    Mobile = user.Mobile,
+                    Role = (Roles)Enum.Parse(typeof(Roles), user.Role)
                 };
             }
             else
@@ -88,7 +89,8 @@ namespace CloudKitchen_API.Services.Implementation
                     Id = user.Id,
                     FullName = user.FullName,
                     Mobile = user.Mobile,
-                    Email = user.Email
+                    Email = user.Email,
+                    Role = (Roles)Enum.Parse(typeof(Roles), user.Role)
                 };
             }
         }
@@ -109,7 +111,8 @@ namespace CloudKitchen_API.Services.Implementation
                 Id = user.Id,
                 FullName = user.FullName,
                 Mobile = user.Mobile,
-                Email = user.Email
+                Email = user.Email,
+                Role = (Roles)Enum.Parse(typeof(Roles), user.Role)
             };
 
         }
